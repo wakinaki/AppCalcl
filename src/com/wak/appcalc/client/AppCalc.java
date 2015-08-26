@@ -4,6 +4,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -19,12 +20,32 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sun.javafx.scene.traversal.Direction;
+import com.wak.appcalc.client.ServerService;
+import com.wak.appcalc.client.ServerServiceAsync;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class AppCalc implements IsWidget, EntryPoint {
 
+	
+	/**
+	 * Create a remote service proxy to talk to the server-side Greeting service.
+	 */
+	private final ServerServiceAsync serverService = GWT.create(ServerService.class);
+
+
+	 public enum Operadores {
+		   NONE,SUM,RES,MULT,DIV 
+		}
+
+	  private Operadores lastOp = Operadores.NONE;
+	  private FramedPanel widget;
+	  private TextField txt1;
+	  double valor = 0;
+	  double memoria = 0;
+	  boolean coma = false;
+	  boolean nuevo = false;
 
 
 	  public interface HtmlLayoutContainerTemplate extends XTemplates {
@@ -39,17 +60,7 @@ public class AppCalc implements IsWidget, EntryPoint {
 			SafeHtml getTemplate();
 		  }
 
-	  public enum Operadores {
-		   NONE,SUM,RES,MULT,DIV 
-		}
 
-	  private Operadores lastOp = Operadores.NONE;
-	  private FramedPanel widget;
-	  private TextField txt1;
-	  double valor = 0;
-	  double memoria = 0;
-	  boolean coma = false;
-	  boolean nuevo = false;
 
 	  private Double DameNumero()
 	  {
@@ -112,7 +123,32 @@ public class AppCalc implements IsWidget, EntryPoint {
 		  }
 	  }
 
+	  private void Binario()
+	  {
+		  String numero = txt1.getText();
 
+		  if (numero.length()>9)
+		  {
+			  numero = numero.substring(0,9);
+		  }
+
+		  if (numero.contains(","))
+		  {
+			  numero = numero.substring(0,numero.indexOf(","));
+		  }
+
+		  serverService.dameBinario(numero, new AsyncCallback<String>() {
+				public void onFailure(Throwable caught) {
+					// Show the RPC error message to the user
+					Info.display("Log","Fallo en el servicio");
+				}
+
+				public void onSuccess(String result) {
+					txt1.setText(result);
+				}
+			});
+
+	  }
 
 	  private void Pulsar(String tecla) 
 	  {
@@ -156,6 +192,10 @@ public class AppCalc implements IsWidget, EntryPoint {
 			  break;
 		  case "=":
 			  Operacion();
+			  break;
+
+		  case "BIN":
+			  this.Binario();
 			  break;
 
 		  default:
