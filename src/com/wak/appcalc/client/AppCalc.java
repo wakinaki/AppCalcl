@@ -2,24 +2,20 @@ package com.wak.appcalc.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.core.client.GXT;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.AbstractHtmlLayoutContainer.HtmlData;
-import com.sencha.gxt.widget.core.client.container.CssFloatLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HtmlLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
-import com.sun.javafx.scene.traversal.Direction;
 import com.wak.appcalc.client.ServerService;
 import com.wak.appcalc.client.ServerServiceAsync;
 
@@ -28,10 +24,6 @@ import com.wak.appcalc.client.ServerServiceAsync;
  */
 public class AppCalc implements IsWidget, EntryPoint {
 
-	
-	/**
-	 * Create a remote service proxy to talk to the server-side Greeting service.
-	 */
 	private final ServerServiceAsync serverService = GWT.create(ServerService.class);
 
 
