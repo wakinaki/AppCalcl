@@ -8,5 +8,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("server")
 public interface ServerService extends RemoteService {
-	String dameBinario(String decimal) throws IllegalArgumentException;
+	String dameBinario(String decimal, String fecha) throws IllegalArgumentException;
+	
 }
+
+

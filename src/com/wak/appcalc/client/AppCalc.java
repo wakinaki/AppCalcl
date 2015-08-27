@@ -1,39 +1,38 @@
 package com.wak.appcalc.client;
 
+
+import java.util.Date;
+import com.google.gwt.i18n.client.DateTimeFormat;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.core.client.GXT;
+
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.AbstractHtmlLayoutContainer.HtmlData;
-import com.sencha.gxt.widget.core.client.container.CssFloatLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HtmlLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
-import com.sun.javafx.scene.traversal.Direction;
 import com.wak.appcalc.client.ServerService;
 import com.wak.appcalc.client.ServerServiceAsync;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class AppCalc implements IsWidget, EntryPoint {
 
-	
-	/**
-	 * Create a remote service proxy to talk to the server-side Greeting service.
-	 */
 	private final ServerServiceAsync serverService = GWT.create(ServerService.class);
-
+	
+	private String binario = "";
 
 	 public enum Operadores {
 		   NONE,SUM,RES,MULT,DIV 
@@ -121,12 +120,14 @@ public class AppCalc implements IsWidget, EntryPoint {
 			  valor = 0;
 
 		  }
+	
 	  }
 
 	  private void Binario()
 	  {
+		  binario = "";
 		  String numero = txt1.getText();
-
+		 		  
 		  if (numero.length()>9)
 		  {
 			  numero = numero.substring(0,9);
@@ -137,17 +138,22 @@ public class AppCalc implements IsWidget, EntryPoint {
 			  numero = numero.substring(0,numero.indexOf(","));
 		  }
 
-		  serverService.dameBinario(numero, new AsyncCallback<String>() {
+		String fecha = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date());
+
+		  
+		  serverService.dameBinario(numero,fecha, new AsyncCallback<String>() {
 				public void onFailure(Throwable caught) {
 					// Show the RPC error message to the user
-					Info.display("Log","Fallo en el servicio");
+					Info.display("Log","Fallo en el servicio web al extraer el binario");
 				}
 
 				public void onSuccess(String result) {
-					txt1.setText(result);
+					binario = result;
+					txt1.setText(binario);
 				}
 			});
-
+		 
+		 
 	  }
 
 	  private void Pulsar(String tecla) 
@@ -159,8 +165,8 @@ public class AppCalc implements IsWidget, EntryPoint {
 			  if (txt1.getText().equals("0"))
 			  {
 				  memoria = 0;
-				  nuevo = true;
 			  }
+			  nuevo = true;
 			  txt1.setText("0");
 			  break;
 		  case "+":
@@ -199,11 +205,15 @@ public class AppCalc implements IsWidget, EntryPoint {
 			  break;
 
 		  default:
-			 if (txt1.getText().equals("0") || nuevo) 
+			 if ((txt1.getText().equals("0") || nuevo) && !coma)
 				 {
 				 txt1.setText("");
 				 nuevo = false;
 				 }
+			 else
+			 {
+				 coma = false;
+			 }
 			 txt1.setText(txt1.getText() + tecla);
 			 break;
 
