@@ -2,6 +2,8 @@ package com.wak.appcalc.client;
 
 
 import java.util.Date;
+
+
 import com.google.gwt.i18n.client.DateTimeFormat;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -32,6 +34,7 @@ public class AppCalc implements IsWidget, EntryPoint {
 
 	private final ServerServiceAsync serverService = GWT.create(ServerService.class);
 	
+	private String numero = "";
 	private String binario = "";
 
 	 public enum Operadores {
@@ -123,10 +126,31 @@ public class AppCalc implements IsWidget, EntryPoint {
 	
 	  }
 
+	  protected void Guardar()
+	  {
+		  String fecha = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date());
+		  
+		  
+		  serverService.guardaDatos(numero, binario, fecha,new AsyncCallback<String>() {
+				public void onFailure(Throwable caught) {
+					// Show the RPC error message to the user
+					Info.display("Log","Fallo en el servicio web al guardar el binario");
+				}
+
+				public void onSuccess(String result) {
+					Info.display("Guardado",result);
+					
+				}
+			});
+		  
+			
+	  }
+	  
 	  private void Binario()
 	  {
+		   
 		  binario = "";
-		  String numero = txt1.getText();
+		  numero = txt1.getText();
 		 		  
 		  if (numero.length()>9)
 		  {
@@ -138,10 +162,8 @@ public class AppCalc implements IsWidget, EntryPoint {
 			  numero = numero.substring(0,numero.indexOf(","));
 		  }
 
-		String fecha = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date());
-
 		  
-		  serverService.dameBinario(numero,fecha, new AsyncCallback<String>() {
+		  serverService.dameBinario(numero, new AsyncCallback<String>() {
 				public void onFailure(Throwable caught) {
 					// Show the RPC error message to the user
 					Info.display("Log","Fallo en el servicio web al extraer el binario");
@@ -150,9 +172,11 @@ public class AppCalc implements IsWidget, EntryPoint {
 				public void onSuccess(String result) {
 					binario = result;
 					txt1.setText(binario);
+					
+					Guardar();
 				}
 			});
-		 
+		
 		 
 	  }
 
