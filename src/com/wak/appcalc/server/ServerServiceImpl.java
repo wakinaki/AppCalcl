@@ -19,7 +19,7 @@ public String dameBinario(String decimal) throws IllegalArgumentException {
 		
 		
 		String binario = Integer.toBinaryString(Integer.parseInt(decimal));
-		return binario;
+		return binario;  
 		
 		
 		
