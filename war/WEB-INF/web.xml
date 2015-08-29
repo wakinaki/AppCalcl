@@ -16,16 +16,7 @@
     <url-pattern>/appcalc/server</url-pattern>
   </servlet-mapping>
   
-  <servlet>
- <servlet-name>DataStore</servlet-name>
- <servlet-class>com.wak.appcalc.server.DataStore</servlet-class>
-</servlet>
-<servlet-mapping>
- <servlet-name>DataStore</servlet-name>
- <url-pattern>/store</url-pattern>
 
-</servlet-mapping>
-  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>AppCalc.html</welcome-file>

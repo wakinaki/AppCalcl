@@ -8,9 +8,14 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("server")
 public interface ServerService extends RemoteService {
+
 	String dameBinario(String decimal) throws IllegalArgumentException;
 	
 	String guardaDatos(String decimal, String binario, String fecha) throws IllegalArgumentException; 
+
+	String guardaDatosJPA(String decimal, String binario, String fecha) throws IllegalArgumentException; 
+
+	String guardaDatosJDO(String decimal, String binario, String fecha) throws IllegalArgumentException; 
 
 }
 
