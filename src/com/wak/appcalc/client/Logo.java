@@ -1,18 +1,22 @@
 package com.wak.appcalc.client;
 
+import java.io.Serializable;
+
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.IdentityType;
-import com.google.appengine.api.datastore.Entity;
 
 
+
+
+@SuppressWarnings("serial")
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Logo { 
+public class Logo implements Serializable { 
 
-
+   
 	@PrimaryKey
 	@Persistent(valueStrategy=IdGeneratorStrategy.IDENTITY)
 	private Long id;
@@ -28,14 +32,6 @@ public class Logo {
 	@Persistent
 	@Column(name="binario")  
 	private String binario;
-	
-	public Logo(final String fecha, final String decimal, final String binario)
-	{
-		this.fecha = fecha;
-		this.decimal = decimal;
-		this.binario = binario;
-	}
-	
 	
 	public Long getId() {
 		return id;

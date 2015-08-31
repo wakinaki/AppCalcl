@@ -6,7 +6,7 @@ import javax.jdo.PersistenceManagerFactory;
 public class PMF {
 
 	private static final PersistenceManagerFactory pmfInstance = 
-			JDOHelper.getPersistenceManagerFactory("transactions optional");
+			JDOHelper.getPersistenceManagerFactory("transactions-optional");
 	
 	private PMF()
 	{}

@@ -1,7 +1,7 @@
 package com.wak.appcalc.client;
 
 
-import com.google.gwt.core.client.GWT;
+
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -19,6 +19,8 @@ import com.sencha.gxt.widget.core.client.grid.GridView;
 
 public class LogoGrid {
 
+	private AppCalc padre;
+	
 	public interface GridProperties extends PropertyAccess<Logo> {
 	      ModelKeyProvider<Logo> id();
 	      ValueProvider<Logo, String> fecha();
@@ -28,16 +30,22 @@ public class LogoGrid {
 	    }
 		  
 	    // Setup the property access definitions for the values for the grid columns
-	    public static GridProperties gridProperties = GWT.create(GridProperties.class);
+	private GridProperties gridProperties;  
+	
 	      
-	  public Widget createGrid() {
+	  public Widget createGrid(AppCalc tPadre) {
 		// Setup the ListStore.
-	      ListStore<Logo> listStore = new ListStore<Logo>(gridProperties.id());
+		  
+		  padre = tPadre;
+		  gridProperties = padre.gridProperties;
+		  
+	      ListStore<Logo> listStore = padre.listStore;
 		
+	      
 	      // Setup the grid columns
-	      ColumnConfig<Logo, String> nameCol = new ColumnConfig<Logo, String>(gridProperties.fecha(), 10, "Fecha");
-	      ColumnConfig<Logo, String> nameCol1 = new ColumnConfig<Logo, String>(gridProperties.decimal(), 10, "Decimal");
-	      ColumnConfig<Logo, String> nameCol2 = new ColumnConfig<Logo, String>(gridProperties.binario(), 10, "Binario");
+	      ColumnConfig<Logo, String> nameCol = new ColumnConfig<Logo, String>(gridProperties.fecha(), 100, "Fecha");
+	      ColumnConfig<Logo, String> nameCol1 = new ColumnConfig<Logo, String>(gridProperties.decimal(), 100, "Decimal");
+	      ColumnConfig<Logo, String> nameCol2 = new ColumnConfig<Logo, String>(gridProperties.binario(), 100, "Binario");
 	      List<ColumnConfig<Logo, ?>> columns = new ArrayList<ColumnConfig<Logo, ?>>();
 	      columns.add(nameCol);
 	      columns.add(nameCol1);
@@ -52,6 +60,8 @@ public class LogoGrid {
 	      Grid<Logo> grid = new Grid<Logo>(listStore, columnModel, gridView);
 	      // Setup a size if not depending on the parent container to give it a size. 
 	      grid.setPixelSize(300, 200);
+	      
+	      
 	 
 	    return grid;
 	  }
