@@ -1,2 +1,0 @@
-serviceClass: com.wak.appcalc.client.AppCalc.GreetingService
-path: C9B3440B96F2D97B7B86EDF45A34D935.gwt.rpc
