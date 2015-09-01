@@ -1,11 +1,11 @@
 package com.wak.appcalc.client;
 
 import java.util.Date;
-import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,6 +31,7 @@ public class Calculadora {
 	private AppCalc padre;
 	private boolean operando = false;
 	private TextButton botonCero;
+	private int maxSize = 10;
 	
 	 public enum Operadores {
 		   NONE,SUM,RES,MULT,DIV 
@@ -42,10 +43,11 @@ public class Calculadora {
 	  double memoria = 0;
 	  boolean coma = false;
 	  boolean nuevo = false;
+	  boolean percent = false;
 
 	  public interface HtmlLayoutContainerTemplate extends XTemplates {
-			@XTemplate("<table width=\"50%\" height=\"50%\" align=\"center\" ><tbody>"
-					+"<tr><td class=\"texto\" colspan=4 /></td>"
+			@XTemplate("<table width=\"50%\" height=\"50%\" align=\"center\" valign=\"bottom\" >"
+					+"<tr><td class=\"texto\" colspan=4 /></td></tr>"
 					+ "<tr ><td class=\"cell0\" /><td class=\"cell1\" /><td class=\"cell2\" /><td class=\"cell3\" /></tr>"
 					+ "<tr ><td class=\"cell4\" /><td class=\"cell5\" /><td class=\"cell6\" /><td class=\"cell7\" /></tr>"
 					+ "<tr ><td class=\"cell8\" /><td class=\"cell9\" /><td class=\"cell10\" /><td class=\"cell11\" /></tr>"
@@ -64,17 +66,56 @@ public class Calculadora {
 
 	  private void PonerResultado(double numero)
 	  {
-		  if ( (memoria % 2) == 0) PonerTexto(Long.toString((long)numero));
-			else PonerTexto(Double.toString(numero).replace(".", ","));
+		  
+		  String texto = "";
+		  
+		  if ( (memoria % 2) == 0)
+			  {
+			  	texto = Long.toString((long)numero);
+			  	
+			  	if (texto.length() > maxSize-1)
+			  	{
+			  		texto = NumberFormat.getScientificFormat().format(Double.parseDouble(texto));
+			  	}
+			  	
+			  }
+			else {
+				
+				texto = Double.toString(numero);
+			  	
+				if (texto.length() > maxSize-1)
+			  	{
+			  		texto = NumberFormat.getScientificFormat().format(Double.parseDouble(texto));
+			  	}
+				
+				texto = texto.replace(".", ",");
+			}
+
+		  PonerTexto(texto);
+
+		  GWT.log(texto);
+		  
 	  }
 
-
+	  private void Reset()
+	  {
+		  nuevo = true;
+		  coma = false;
+		  percent = false;
+		  operando = false;
+	  }
+	  
+	  
 	  private void Operacion()
 	  {
 		  try{
 
-		   //Info.display("memoria2",Double.toString(memoria));
-
+			if (percent)
+			{
+				valor = valor * 100 / memoria;
+				percent = false;
+			}
+			  
 			switch(lastOp)
 			{
 			case NONE:
@@ -94,11 +135,14 @@ public class Calculadora {
 				break;
 
 			}
-
+			
 			PonerResultado(memoria);
+			Reset();
 
 		  }catch(Exception err){
+			  
 			  Info.display("Error",err.getMessage());
+			  
 		  }
 
 	  }
@@ -110,12 +154,12 @@ public class Calculadora {
 		  if (!nuevo)
 		  {	  
 			  memoria = DameNumero();
-			  nuevo = true;
 			  valor = 0;
+			Reset();
 
 		  }
 
-		  operando = false;
+		  operando = true;
 
 	  }
 
@@ -131,9 +175,8 @@ public class Calculadora {
 		  
 		  padre.nextId++;
 				  
-		 nuevo = true;
-		
 		 operando = false;
+  		Reset();
 	  }
 	  
 	  
@@ -148,7 +191,6 @@ public class Calculadora {
 				}
 
 				public void onSuccess(String result) {
-					Info.display("Guardado","JDO");
 					Actualizar();
 					
 				}	
@@ -203,28 +245,33 @@ public class Calculadora {
 	  private void Pulsar(String tecla) 
 	  {
 		  
-		  if (operando)
-		  {
-			  Info.display("Log","Operacion en curso");
-		  }
 
 		  switch(tecla)
 		  {
 		  case "C":
-			  nuevo = true;
 			  PonerTexto("0");
-			  operando = false;
 			  botonCero.setText("AC");
+  			  Reset();
 			  break;
 			  
 		  case "AC":
-			  nuevo = true;
-			  operando = false;
 			  PonerTexto("0");
 			  memoria = 0;
-			  botonCero.setText("C");
+			  Reset();
 			  break;
 			  
+		  case "%":
+			  if (!operando)
+			  {
+				 Operar(Operadores.DIV);
+				 valor = 100;
+				 Operacion();
+			  }
+			  else
+			  {
+				  percent = true;
+			  }
+			  break;
 		  case "+":
 			  Operar(Operadores.SUM);
 			  break;
@@ -242,19 +289,25 @@ public class Calculadora {
 
 		  case ",":
 
-			  if (coma) Info.display("Log","Coma ya pulsda");
-			  else PonerTexto(DameTexto()+",");
+			  if (!coma) 
+				  {
+				  if (nuevo) {
+					  PonerTexto("0,");
+					  nuevo = false;
+				  	}
+				  else {
+					  PonerTexto(DameTexto()+",");
+				  	}
+				  }
 			  coma = true;
-			  operando = false;
-
+			  
 			  break;
 
 		  case "+/-":
 			  double numero = DameNumero();
 			  numero *= -1;
 			  PonerResultado(numero);
-			  operando = false;
-
+			  
 			  break;
 		  case "=":
 			  Operacion();
@@ -266,18 +319,19 @@ public class Calculadora {
 			  break;
 
 		  default:
-			 if ((DameTexto().equals("0") || nuevo) && !coma)
+			 if (DameTexto().equals("0") || nuevo)
 				 {
 				 PonerTexto("");
 				 nuevo = false;
+				 botonCero.setText("C");
 				 }
-			 else
+			 String texto = DameTexto() + tecla;
+			 if (texto.length() < maxSize)
 			 {
-				 coma = false;
+				 PonerTexto(DameTexto() + tecla);
+	  		     valor = DameNumero();	
+				 
 			 }
-			 PonerTexto(DameTexto() + tecla);
-  		     operando = false;
-  		     valor = DameNumero();	
 			 break;
 
 		  }
@@ -297,24 +351,30 @@ public class Calculadora {
 private void PonerTexto(String texto){
 	
 	int fontSize = 50;
-	
-	if (texto.length() > 11)
-	{
-		fontSize = 30;
-	}
-	else if (texto.length() > 19)
-	{
-		fontSize = 15;
-	}
 
 	StyleInjector.inject(".textAreaFontSize {font-size: " + fontSize +"px !important;font-style: bold !important; font-family: Arial !important;text-align: right;}");
 	txt1.setStyleName("textAreaFontSize");
 	txt1.setText(texto);
-}
 
+}
+private String isNumber(String str)  
+{  
+  if(str.length() == 0) return "";	
+	
+  try  
+  {  
+    double d = Double.parseDouble(str);  
+  }  
+  catch(NumberFormatException nfe)  
+  {  
+    return "0";  
+  }  
+  return str;  
+}
 private String DameTexto()
 {
-	return txt1.getText();
+	
+	return isNumber(txt1.getText());
 }
 		  
  public Widget createCalc(AppCalc tPadre)
@@ -328,24 +388,7 @@ private String DameTexto()
 	 	txt1 = new FieldLabel();
 	 	txt1.setLabelSeparator("");
 		PonerTexto("0");
-	 	/*
-		String catalogo = "";
-		
-		 switch(padre.combo.getSelectedIndex())
-		  { 
-		 case 0:
-			 catalogo = "Logo";
-			 break;
-		 case 1:
-			 catalogo = "Log";
-			 break;
-			 
-		 case 2: 
-			 catalogo = "Nomodel";
-			 break;
-		  }
-			*/
-		
+	
 		  serverService.cargaDatosJDO( new AsyncCallback<Logo[]>() {
 				public void onFailure(Throwable caught) {
 					// Show the RPC error message to the user
@@ -366,12 +409,21 @@ private String DameTexto()
 		 
 	  htmlLayoutContainer.add(txt1, new HtmlData(".texto"));  
 
+	  
+		
+	  
 	  String[] textos = new  String[]{"AC","+/-","%","/","7","8","9","X","4","5","6","-","1","2","3","+","0","BIN",",","="};
 
 	  for (int i=0;i<textos.length;i++)
 	  {
 		  TextButton button = new TextButton(textos[i], selectHandler);
+		  button.setSize("80", "80");
+		 
 		  button.setPixelSize(80, 80);
+		  String estilo = button.getStylePrimaryName();
+		  StyleInjector.inject("." + estilo + "{font-size: 15px !important;}");
+		  button.setStyleName(estilo);
+
 		  htmlLayoutContainer.add(button, new HtmlData(".cell" + Integer.toString(i)));
 
 		  if (textos[i].equals("AC"))

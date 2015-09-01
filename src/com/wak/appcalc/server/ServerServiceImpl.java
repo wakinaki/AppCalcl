@@ -7,7 +7,6 @@ import com.wak.appcalc.client.Log;
 import com.wak.appcalc.client.Logo;
 import com.wak.appcalc.client.PMF;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -20,8 +19,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.appengine.api.datastore.DatastoreService; 
 import com.google.appengine.api.datastore.DatastoreServiceFactory; 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.PreparedQuery;
 
 
 
