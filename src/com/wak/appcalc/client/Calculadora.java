@@ -66,7 +66,6 @@ public class Calculadora {
 
 	  private void PonerResultado(double numero)
 	  {
-		  
 		  String texto = "";
 		  
 		  if ( (memoria % 2) == 0)
@@ -85,14 +84,24 @@ public class Calculadora {
 			  	
 				if (texto.length() > maxSize-1)
 			  	{
-			  		texto = NumberFormat.getScientificFormat().format(Double.parseDouble(texto));
+					String entero = texto.substring(0,texto.indexOf("."));
+							{
+								if (entero.length() > maxSize-5) 
+								{
+									texto = NumberFormat.getScientificFormat().format(Double.parseDouble(texto));
+								}
+								else 
+								{
+									texto = NumberFormat.getFormat("0.000").format(Double.parseDouble(texto));
+								}
+							}	
 			  	}
 				
 				texto = texto.replace(".", ",");
 			}
 
 		  PonerTexto(texto);
-
+		  
 		  GWT.log(texto);
 		  
 	  }
@@ -110,6 +119,9 @@ public class Calculadora {
 	  {
 		  try{
 
+			
+			 
+			  
 			if (percent)
 			{
 				valor = valor * 100 / memoria;
@@ -136,6 +148,7 @@ public class Calculadora {
 
 			}
 			
+			GWT.log(Double.toString(memoria));
 			PonerResultado(memoria);
 			Reset();
 
@@ -151,6 +164,12 @@ public class Calculadora {
 	  {
 		  lastOp = operador;
 
+			 if ((int)valor == 0 )
+				 {
+				 	valor = (int)0;
+				 	PonerResultado(valor);
+				 }
+		  
 		  if (!nuevo)
 		  {	  
 			  memoria = DameNumero();
@@ -245,7 +264,8 @@ public class Calculadora {
 	  private void Pulsar(String tecla) 
 	  {
 		  
-
+		  txt1.setVisible(false);
+		  
 		  switch(tecla)
 		  {
 		  case "C":
@@ -335,6 +355,9 @@ public class Calculadora {
 			 break;
 
 		  }
+		  
+		  txt1.setVisible(true);
+
 	  }
 
 
@@ -363,7 +386,8 @@ private String isNumber(String str)
 	
   try  
   {  
-    double d = Double.parseDouble(str);  
+    @SuppressWarnings("unused")
+	double d = Double.parseDouble(str.replace(",", "."));  
   }  
   catch(NumberFormatException nfe)  
   {  
