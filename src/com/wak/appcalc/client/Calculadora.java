@@ -44,7 +44,8 @@ public class Calculadora {
 	  boolean coma = false;
 	  boolean nuevo = false;
 	  boolean percent = false;
-
+	  boolean esBinario = false;
+	  
 	  public interface HtmlLayoutContainerTemplate extends XTemplates {
 			@XTemplate("<table width=\"50%\" height=\"50%\" align=\"center\" valign=\"bottom\" >"
 					+"<tr><td class=\"texto\" colspan=4 /></td></tr>"
@@ -118,9 +119,6 @@ public class Calculadora {
 	  private void Operacion()
 	  {
 		  try{
-
-			
-			 
 			  
 			if (percent)
 			{
@@ -148,7 +146,7 @@ public class Calculadora {
 
 			}
 			
-			GWT.log(Double.toString(memoria));
+			//GWT.log(Double.toString(memoria));
 			PonerResultado(memoria);
 			Reset();
 
@@ -221,12 +219,7 @@ public class Calculadora {
 	  private void Binario()
 	  {
 
-		  if (nuevo)
-		  {
-			  Guardar();
-		  }
-		  else 
-		  {
+		  	 esBinario = true;
 			  binario = "";
 			  numero = DameTexto();
 
@@ -240,7 +233,6 @@ public class Calculadora {
 				  numero = numero.substring(0,numero.indexOf(","));
 			  }
 
-
 			  serverService.dameBinario(numero, new AsyncCallback<String>() {
 					public void onFailure(Throwable caught) {
 						// Show the RPC error message to the user
@@ -250,12 +242,9 @@ public class Calculadora {
 					public void onSuccess(String result) {
 						binario = result;
 						PonerTexto(binario);
-
 						Guardar();
 					}
 				});
-		  }
-			  
 		 
 
 
@@ -375,6 +364,14 @@ private void PonerTexto(String texto){
 	
 	int fontSize = 50;
 
+	if (esBinario)
+	{
+		if (texto.length() > 9 ) fontSize = 50 * 9 / texto.length() + 5;
+		esBinario = false;
+	}
+
+	
+	
 	StyleInjector.inject(".textAreaFontSize {font-size: " + fontSize +"px !important;font-style: bold !important; font-family: Arial !important;text-align: right;}");
 	txt1.setStyleName("textAreaFontSize");
 	txt1.setText(texto);
